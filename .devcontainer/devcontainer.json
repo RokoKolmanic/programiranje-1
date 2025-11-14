@@ -3,16 +3,17 @@
 	"name": "Programiranje 1",
 	// To build a Docker virtual machine locally, comment the "image" line and uncomment
 	// the "build" lines below.
-	// "image": "j00sko/programiranje1:latest",
-	 "build": {
-	 	"dockerfile": "Dockerfile"
-	 },
+	 "image": "vsc-programiranje-1-1ba61f12121e8ddd2d375a902a3ae9b6e1002d2c048f349bb0d78d8621a12e30:latest",
+	  // "build": {
+	  // 	"dockerfile": "Dockerfile"
+	  // },
 	"customizations": {
 		"vscode": {
 			"extensions": [
 				"ocamllabs.ocaml-platform",
 				"ms-python.vscode-pylance",
-				"ms-toolsai.jupyter"
+				"ms-toolsai.jupyter",
+				"leanprover.lean4"
 			]
 		}
 	},

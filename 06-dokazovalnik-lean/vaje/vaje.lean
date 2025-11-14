@@ -3,24 +3,35 @@
 -- (A x B) ^ C <=> A ^ C x B ^ C
 def eksponent (A B C : Type) (f : C → Prod A B) : Prod (C → A) (C → B) :=
   ⟨
-    sorry,
-    sorry
+    fun c => (f c).1,
+    fun c => (f c).2
   ⟩
 def eksponent_prop (A B C : Prop) (f : C → A ∧ B) : (C → A) ∧ (C → B) :=
   ⟨
     sorry,
     sorry
   ⟩
+
+#check Add.intro
 def eksponent_prop_s_taktikami (A B C : Prop) (f : C → A ∧ B) : (C → A) ∧ (C → B) :=
   by
-    sorry
+    apply And.intro
+    · intro h
+      have h1 := f h
+      exact h1.left
+    · intro h
+      exact (f h).right
 
 
 -- ------------------------------
 -- Logika
 
-theorem eq1 {A B : Prop} : (A ∧ B) ↔ (B ∧ A) := by
-  sorry
+theorem eq1 {A B : Prop} : (A ∧ B) ↔ (B ∧ A) :=
+  by
+    apply Iff.intro
+    · intro h
+      apply And.intro
+
 
 theorem eq2 {A B : Prop} : (A ∨ B) ↔ (B ∨ A) :=
   sorry
