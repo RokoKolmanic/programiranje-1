@@ -66,6 +66,7 @@ def stakniVektor' {m n : Nat} :
 
 -- Primer uporabe Eq.mpr, ki spremeni tip, če imamo dokaz, da sta tipa enaka
 #check Eq.mpr
+#check congrArg
 def stakniVektor'' {m n : Nat} :
   VektorBoolov m ->
   VektorBoolov n ->
@@ -74,7 +75,7 @@ def stakniVektor'' {m n : Nat} :
   fun xs ys =>
     match xs with
     -- Manjka dokaz: ⊢ VektorBoolov (0 + n) = VektorBoolov n
-    | VektorBoolov.prazen => Eq.mpr sorry ys -- Dokaz (0+n = n) podamo kot argument dokazu enakosti dolžin vektorjev
+    | VektorBoolov.prazen => Eq.mpr (congrArg VektorBoolov (Nat.zero_add n)) ys -- Dokaz (0+n = n) podamo kot argument dokazu enakosti dolžin vektorjev
     | VektorBoolov.sestavljen x xs' =>
         by
           rw [Nat.succ_add]
@@ -126,8 +127,14 @@ def index1 : Finite 2 :=
 -- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
 -- Vektor z elementi poljubnega tipa A
 
-inductive VektorPoljuben where
-  sorry
+inductive VektorPoljuben : Type -> Nat -> Type where
+  | prazen : {A : Type} -> VektorPoljuben A 0
+  | sestavljen :
+      {A : Type} ->
+      {n : Nat} ->
+      A ->
+      VektorPoljuben A n ->
+      VektorPoljuben A (Nat.succ n)
 
 -- Primer vektorja z elementi tipa Nat
 def vektorNaravnihStevil : VektorPoljuben Nat 3 :=
