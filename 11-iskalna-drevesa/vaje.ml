@@ -18,7 +18,17 @@
        /   / \
       0   6   11
 [*----------------------------------------------------------------------------*)
+type 'a tree = 
+     | Empty
+     | Node of ('a tree * 'a * 'a tree)
 
+
+let leaf x = Node (Empty, x, Empty)
+
+let left = Node (leaf 0, 2, Empty)
+let right = Node (leaf 6, 7, leaf 11)
+
+let test_tree = Node (left, 5, right)
 
 (*----------------------------------------------------------------------------*]
  Funkcija [mirror] vrne prezrcaljeno drevo. Na primeru [test_tree] torej vrne
@@ -33,7 +43,10 @@
  Node (Node (Node (Empty, 11, Empty), 7, Node (Empty, 6, Empty)), 5,
  Node (Empty, 2, Node (Empty, 0, Empty)))
 [*----------------------------------------------------------------------------*)
-
+let rec mirror t = 
+     match t with
+     | Empty -> Empty
+     | Node (tl, x, tr) -> Node (mirror tr, x, mirror tl)
 
 (*----------------------------------------------------------------------------*]
  Funkcija [height] vrne višino oz. globino drevesa, funkcija [size] pa število
@@ -44,7 +57,14 @@
  # size test_tree;;
  - : int = 6
 [*----------------------------------------------------------------------------*)
+let rec height t = 
+     match t with
+     | Empty -> 0
+     | Node (tl, _, tr) -> 1 + max (height tl) (height tr)
 
+let rec size = function
+     | Empty -> 0
+     | Node (l, _, r) -> 1 + size l + size r
 
 (*----------------------------------------------------------------------------*]
  Funkcija [map_tree f tree] preslika drevo v novo drevo, ki vsebuje podatke
@@ -55,7 +75,9 @@
  Node (Node (Node (Empty, false, Empty), false, Empty), true,
  Node (Node (Empty, true, Empty), true, Node (Empty, true, Empty)))
 [*----------------------------------------------------------------------------*)
-
+let rec map_tree f = function
+     | Empty -> Empty
+     | Node (l, x, r) -> Node (map_tree f l, f x, map_tree f r)
 
 (*----------------------------------------------------------------------------*]
  Funkcija [list_of_tree] pretvori drevo v seznam. Vrstni red podatkov v seznamu
@@ -64,7 +86,9 @@
  # list_of_tree test_tree;;
  - : int list = [0; 2; 5; 6; 7; 11]
 [*----------------------------------------------------------------------------*)
-
+let rec list_of_tree = function
+     | Empty -> []
+     | Node (l, x, r) -> list_of_tree l @ [x] @ list_of_tree r 
 
 (*----------------------------------------------------------------------------*]
  Funkcija [is_bst] preveri ali je drevo binarno iskalno drevo (Binary Search 
@@ -76,8 +100,22 @@
  # test_tree |> mirror |> is_bst;;
  - : bool = false
 [*----------------------------------------------------------------------------*)
+let rec is_bst = function
+     | Empty -> true
+     | Node (l, x, r) -> 
+          (is_bst l) && (is_bst r) 
+          && (List.for_all (fun y -> y < x) (list_of_tree l)) 
+          && (List.for_all (fun y -> y > x) (list_of_tree r))
 
 
+let is_bst t =
+  let rec list_is_ordered = function
+    | [] | _ :: [] -> true
+    | x :: y :: tl -> if x < y then list_is_ordered (y :: tl) else false
+  in
+  t |> list_of_tree |> list_is_ordered
+
+  
 (*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*]
  V nadaljevanju predpostavljamo, da imajo dvojiška drevesa strukturo BST.
 [*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*)
@@ -91,7 +129,17 @@
  # member 3 test_tree;;
  - : bool = false
 [*----------------------------------------------------------------------------*)
+let rec insert x = function
+  | Empty -> leaf x
+  | Node (l, y, r) -> 
+     if x < y then Node (insert x l, y, r)
+     else Node (l, y, insert x r)
 
+let rec member x = function
+     | Empty -> false
+     | Node (l, y, r) when x = y -> true
+     | Node (l, y, r) when x < y -> member x l
+     | Node (l, y, r) -> member x r
 
 (*----------------------------------------------------------------------------*]
  Funkcija [member2] ne privzame, da je drevo bst.
